@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 2.15)
 project(iguana)
 
+option(BUILD_UNIT_TESTS "Build unit tests" OFF)
+if (BUILD_UNIT_TESTS)
+    enable_testing()
+endif ()
+
 if(MSVC)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20")
 add_compile_options(/utf-8)
@@ -18,7 +23,7 @@ endif()
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif(MSVC)
 set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")
-set(IGUANA_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(IGUANA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 20)
@@ -52,6 +57,7 @@ endif()
 
 include_directories(
 	${IGUANA_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 if(CMAKE_COMPILER_IS_GNUCXX)
@@ -81,26 +87,34 @@ set(TEST_NOTHROW test/test_yaml_nothrow.cpp)
 set(TEST_UTIL test/test_util.cpp)
 set(TEST_XMLNOTHROW test/test_xml_nothrow.cpp)
 
-add_executable(json_example 	${JSON_EXAMPLE})
-add_executable(json_benchmark 	${JSONBENCHMARK})
-add_executable(test_some	${TEST_SOME})
-add_executable(test_ut 	${TEST_UT})
-add_executable(test_json_files 	${TEST_JSON_FILES})
-add_executable(xml_example 		${XML_EXAMPLE})
-add_executable(test_xml ${TEST_XML})
-add_executable(xml_benchmark ${XMLBENCH})
-add_executable(test_xml_nothrow ${TEST_XMLNOTHROW})
-add_executable(yaml_example 		${YAML_EXAMPLE})
-add_executable(test_yaml ${TEST_YAML})
-add_executable(yaml_benchmark ${YAMLBENCH})
-add_executable(test_nothrow ${TEST_NOTHROW})
-add_executable(test_util ${TEST_UTIL})
+
+add_library(iguana INTERFACE)
+
+target_include_directories(
+    iguana INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+
+if(BUILD_UNIT_TESTS)
+    add_executable(json_example 	${JSON_EXAMPLE})
+    add_executable(json_benchmark 	${JSONBENCHMARK})
+    add_executable(test_some	${TEST_SOME})
+    add_executable(test_ut 	${TEST_UT})
+    add_executable(test_json_files 	${TEST_JSON_FILES})
+    add_executable(xml_example 		${XML_EXAMPLE})
+    add_executable(test_xml ${TEST_XML})
+    add_executable(xml_benchmark ${XMLBENCH})
+    add_executable(test_xml_nothrow ${TEST_XMLNOTHROW})
+    add_executable(yaml_example 		${YAML_EXAMPLE})
+    add_executable(test_yaml ${TEST_YAML})
+    add_executable(yaml_benchmark ${YAMLBENCH})
+    add_executable(test_nothrow ${TEST_NOTHROW})
+    add_executable(test_util ${TEST_UTIL})
+endif()
 
 # unit test
-option(BUILD_UNIT_TESTS "Build unit tests" ON)
-if (BUILD_UNIT_TESTS)
-    enable_testing()
-endif ()
+
 
 # coverage test
 option(COVERAGE_TEST "Build with unit test coverage" OFF)
