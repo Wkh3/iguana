@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.15)
+cmake_minimum_required(VERSION 3.5)
 project(iguana)
 
 option(BUILD_UNIT_TESTS "Build unit tests" OFF)
